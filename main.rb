@@ -38,6 +38,20 @@ post '/' do
   redirect '/'
 end
 
+get '/star' do
+  post_id = params["post_id"].to_i
+  post = db.execute("SELECT star_count FROM posts WHERE id = ?", post_id)
+  if post.empty?
+    return "error"
+  end
+
+  new_star_count = post[0]["star_count"] + 1
+  stmt = db.prepare("UPDATE posts SET star_count = ? WHERE id = ?")
+  stmt.bind_params(new_star_count, post_id)
+  stmt.execute
+  return "スターをつけました"
+end
+
 get '/hello' do
   "Hello world"
 end
