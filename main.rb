@@ -54,11 +54,3 @@ get '/star' do
   response = { "star_count" => new_star_count }
   json response
 end
-
-get '/hello' do
-  "Hello world"
-end
-
-get '/example' do
-  erb :example
-end
