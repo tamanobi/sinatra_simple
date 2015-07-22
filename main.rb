@@ -39,8 +39,9 @@ post '/' do
   redirect '/'
 end
 
-get '/star' do
-  post_id = params["post_id"].to_i
+get '/star/:post_id' do
+  #post_id = params["post_id"].to_i
+  post_id = params[:post_id].to_i
   post = db.execute("SELECT star_count FROM posts WHERE id = ?", post_id)
   if post.empty?
     return "error"
