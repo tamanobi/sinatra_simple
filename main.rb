@@ -2,9 +2,28 @@ require 'sinatra'
 require 'sqlite3'
 require 'securerandom'
 require 'sinatra/json'
+require 'rack/auth/digest/md5'
 
 db = SQLite3::Database.new "db/post.db"
 db.results_as_hash = true
+
+helpers do
+  def protected!
+    unless authorized?
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Not authorized\n"])
+    end
+  end
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['changeme', 'changeme'] 
+  end
+end
+
+get '/secret?' do
+  protected!
+  "secret"
+end
 
 get '/' do
   posts = db.execute("SELECT * FROM posts ORDER BY id DESC")
